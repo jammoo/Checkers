@@ -3,7 +3,7 @@
 using std::cout;
 
 class Board {
-	Tile tiles[8][8];
+	Tile tiles[8][8]; 
 	bool whiteTurn;
 	int numWhitePieces;
 	int numBlackPieces;
