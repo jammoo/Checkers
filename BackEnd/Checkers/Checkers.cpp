@@ -48,6 +48,47 @@ class King : public Piece {
 	}
 };
 
+
+class Tile {
+	int rank;
+	int file;
+	bool isWhite;
+	Piece currentOccupant;
+public:
+	Tile(int rank, int file, bool isWhite, Piece currentOccupant) {
+		this->rank = rank;
+		this->file = file;
+		this->isWhite = isWhite;
+		this->currentOccupant = currentOccupant;
+	};
+
+	bool isEmpty() {
+		// return true iff the pointer to an object returns 0, indicating that it is empty
+		return &currentOccupant == 0;
+	}
+
+	bool whiteOccupied() {
+		// check if the tile is empty
+		if (not isEmpty()) {
+			// if the tile is occupied, return true iff the occupant is white
+			return currentOccupant.isWhite();
+		}
+		// if tile is epty return false
+		return false;
+	}
+
+	bool blackOccupied() {
+		// check if the tile is empty
+		if (not isEmpty()) {
+			// if the tile is occupied, return true iff the occupant is not white
+			return not currentOccupant.isWhite();
+		}
+		// if tile is epty return false
+		return false;
+	}
+
+};
+
 class Board {
 	Tile tiles[8][8];
 	bool whiteTurn;
@@ -71,9 +112,9 @@ public:
 				}
 			}
 		}
-		whiteTurn = false;
-		numWhitePieces = 12;
-		numBlackPieces = 12;
+		setWhiteTurn(false);
+		setNumWhitePieces(12);
+		setNumBlackPieces(12);
 	}
 
 	bool checkmate() {
@@ -87,7 +128,33 @@ public:
 	void decrementBlack() {
 		numBlackPieces--;
 	}
+
+	bool isWhiteTurn() {
+		return this->whiteTurn;
+	}
+
+	void setWhiteTurn(bool whiteTurn) {
+		this->whiteTurn = whiteTurn;
+	}
+
+	int getNumWhitePieces() {
+		return numWhitePieces;
+	}
+
+	int getNumBlackPieces() {
+		return numBlackPieces;
+	}
+
+	void setNumWhitePieces(int numWhitePieces) {
+		this->numWhitePieces = numWhitePieces;
+	}
+
+	void setNumBlackPieces(int numBlackPieces) {
+		this->numBlackPieces = numBlackPieces;
+	}
+
 };
+
 
 int main()
 {
