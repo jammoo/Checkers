@@ -48,7 +48,6 @@ class King : public Piece {
 	}
 };
 
-
 class Tile {
 	int rank;
 	int file;
