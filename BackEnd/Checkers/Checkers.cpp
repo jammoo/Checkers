@@ -1,20 +1,52 @@
-// Checkers.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+
+using std::cout;
+
+class Board {
+	Tile tiles[8][8];
+	bool whiteTurn;
+	int numWhitePieces;
+	int numBlackPieces;
+public:
+	Board() {
+		for (int rank = 0; rank < 8; rank++) {
+			for (int file = 0; file < 8; file++) {
+				if ((rank == 0 && file % 2 == 1) || (rank == 1 && file % 2 == 0) || (rank == 2 && file % 2 == 1)) {
+					// Make tiles[rank][file] a new Tile occupied by white Men
+
+				}
+				else if ((rank == 5 && file % 2 == 0) || (rank == 6 && file % 2 == 1) || (rank == 7 && file % 2 == 0)) {
+					// Make tiles[rank][file] a new Tile occupied by black Men
+
+				}
+				else {
+					// Make tiles[rank][file] a new Tile unoccupied
+
+				}
+			}
+		}
+		whiteTurn = false;
+		numWhitePieces = 12;
+		numBlackPieces = 12;
+	}
+
+	bool checkmate() {
+		return numWhitePieces == 0 || numBlackPieces == 0;
+	}
+
+	void decrementWhite() {
+		numWhitePieces--;
+	}
+
+	void decrementBlack() {
+		numBlackPieces--;
+	}
+};
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	cout << "Hello World!\n";
+
+	system("pause>0");
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
