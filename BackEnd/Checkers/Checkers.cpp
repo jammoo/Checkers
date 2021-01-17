@@ -11,8 +11,8 @@ public:
 	Piece(bool isWhite) {
 		this->white = isWhite;
 	}
-	virtual pair<int, int>* getAvailableMoves() = 0;
-	virtual pair<int, int>* getAvailableAttacks() = 0;
+	virtual pair<int, int>* getAvailableMoves() {};
+	virtual pair<int, int>* getAvailableAttacks() {};
 	bool isWhite() {
 		return this->white == true;
 	}
