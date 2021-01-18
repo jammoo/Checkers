@@ -53,6 +53,8 @@ public:
 	}
 };
 
+
+
 class Board {
 	Piece* tiles[8][8];
 	bool whiteTurn;
@@ -60,27 +62,33 @@ class Board {
 	int numBlackPieces;
 public:
 	Board() {
+		this->setUp();
+	}
+
+	void setUp() {
 		for (int rank = 0; rank < 8; rank++) {
 			for (int file = 0; file < 8; file++) {
 				if ((rank == 0 && file % 2 == 1) || (rank == 1 && file % 2 == 0) || (rank == 2 && file % 2 == 1)) {
 					// Make tiles[rank][file] a new Tile occupied by white Men
-					Men whiteMen(true);
-					this->tiles[rank][file] = *new Tile(rank, file, &whiteMen);
+					this->tiles[rank][file] = new Men(true);
 				}
 				else if ((rank == 5 && file % 2 == 0) || (rank == 6 && file % 2 == 1) || (rank == 7 && file % 2 == 0)) {
 					// Make tiles[rank][file] a new Tile occupied by black Men
-					Men blackMen(false);
-					this->tiles[rank][file] = *new Tile(rank, file, &blackMen);
+					this->tiles[rank][file] = new Men(false);
 				}
 				else {
 					// Make tiles[rank][file] a new Tile unoccupied
-					this->tiles[rank][file] = *new Tile(rank, file, NULL);
+					this->tiles[rank][file] = NULL;
 				}
 			}
 		}
 		setWhiteTurn(false);
 		setNumWhitePieces(12);
 		setNumBlackPieces(12);
+	}
+
+	Piece** getTiles() {
+		return this->tiles;
 	}
 
 	bool checkmate() {
@@ -117,39 +125,57 @@ public:
 
 	void setNumBlackPieces(int numBlackPieces) {
 		this->numBlackPieces = numBlackPieces;
-	}
 
-	bool isEmpty(int rank, int file) {
-		return tiles[rank][file] == NULL;
-	}
 
-	bool whiteOccupied(int rank, int file) {
-		// check if the tile is empty
-		if (not isEmpty(rank, file)) {
-			// if the tile is occupied, return true iff the occupant is white
-			return tiles[rank][file]->isWhite();
+		bool isEmpty(int rank, int file) {
+			return tiles[rank][file] == NULL;
 		}
-		// if tile is empty return false
-		return false;
-	}
 
-	bool blackOccupied(int rank, int file) {
-		// check if the tile is empty
-		if (not isEmpty(rank,file)) {
-			// if the tile is occupied, return true iff the occupant is not white
-			return tiles[rank][file]->isWhite();
+		bool whiteOccupied(int rank, int file) {
+			// check if the tile is empty
+			if (not isEmpty(rank, file)) {
+				// if the tile is occupied, return true iff the occupant is white
+				return tiles[rank][file]->isWhite();
+			}
+			// if tile is empty return false
+			return false;
 		}
-		// if tile is empty return false
-		return false;
-	}
 
+		bool blackOccupied(int rank, int file) {
+			// check if the tile is empty
+			if (not isEmpty(rank, file)) {
+				// if the tile is occupied, return true iff the occupant is not white
+				return tiles[rank][file]->isWhite();
+			}
+			// if tile is empty return false
+			return false;
+		}
+
+	}
 };
-
 
 int main()
 {
 	cout << "Hello World!\n";
+	Board* b = new Board();
+	Piece** t = b->getTiles();
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			if (typeid(t[i][j]).name() == "NULL") {
+				cout << " ";
+			}
+			else if (typeid(t[i][j]).name() == "Men") {
+				cout << "M";
+			}
+			else if (typeid(t[i][j]).name() == "King") {
+				cout << "K";
+			}
+			cout << " ";
+		}
+		cout << "\n";
+	}
+	cout <<
 
-	system("pause>0");
+		system("pause>0");
 }
 
