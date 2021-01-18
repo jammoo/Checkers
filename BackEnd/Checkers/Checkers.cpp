@@ -54,7 +54,7 @@ public:
 };
 
 class Board {
-	Tile tiles[8][8];
+	Piece* tiles[8][8];
 	bool whiteTurn;
 	int numWhitePieces;
 	int numBlackPieces;
