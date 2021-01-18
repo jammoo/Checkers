@@ -5,7 +5,6 @@
 using std::cout;
 using std::pair;
 using std::make_pair;
-using std::type_info;
 
 class Piece {
 	bool white;
@@ -58,7 +57,7 @@ public:
 
 
 class Board {
-	//Piece* tiles[8][8];
+	//Piece* tiles[8][8]; -> this is what should be in the final version, remove the public copy when ready to uncomment
 	bool whiteTurn;
 	int numWhitePieces;
 	int numBlackPieces;
