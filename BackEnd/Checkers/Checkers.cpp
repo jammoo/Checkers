@@ -1,9 +1,11 @@
 #include <iostream>
 #include <tuple>
+#include <typeinfo>
 
 using std::cout;
 using std::pair;
 using std::make_pair;
+using std::type_info;
 
 class Piece {
 	bool white;
@@ -12,8 +14,8 @@ public:
 	Piece(bool isWhite) {
 		this->white = isWhite;
 	}
-	virtual pair<int, int>* getAvailableMoves() {};
-	virtual pair<int, int>* getAvailableAttacks() {};
+	virtual pair<int, int>* getAvailableMoves() = 0;
+	virtual pair<int, int>* getAvailableAttacks() = 0;
 	bool isWhite() {
 		return this->white == true;
 	}
@@ -56,11 +58,12 @@ public:
 
 
 class Board {
-	Piece* tiles[8][8];
+	//Piece* tiles[8][8];
 	bool whiteTurn;
 	int numWhitePieces;
 	int numBlackPieces;
 public:
+	Piece* tiles[8][8];
 	Board() {
 		this->setUp();
 	}
@@ -88,7 +91,7 @@ public:
 	}
 
 	Piece** getTiles() {
-		return this->tiles;
+		//return (this->tiles);
 	}
 
 	bool checkmate() {
@@ -151,23 +154,26 @@ public:
 		return false;
 	}
 
-
 };
 
 int main()
 {
 	cout << "Hello World!\n";
+
 	Board* b = new Board();
-	Piece** t = b->getTiles();
+
+	//Piece** t = b->getTiles();
+
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
-			if (typeid(t[i][j]).name() == "NULL") {
+			
+			if (b->tiles[i][j] == NULL) {
 				cout << " ";
 			}
-			else if (typeid(t[i][j]).name() == "Men") {
+			else if (typeid(*b->tiles[i][j]) == typeid(Men)) {
 				cout << "M";
 			}
-			else if (typeid(t[i][j]).name() == "King") {
+			else if (typeid(*b->tiles[i][j]) == typeid(King)) {
 				cout << "K";
 			}
 			cout << " ";
