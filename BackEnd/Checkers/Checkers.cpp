@@ -125,33 +125,33 @@ public:
 
 	void setNumBlackPieces(int numBlackPieces) {
 		this->numBlackPieces = numBlackPieces;
-
-
-		bool isEmpty(int rank, int file) {
-			return tiles[rank][file] == NULL;
-		}
-
-		bool whiteOccupied(int rank, int file) {
-			// check if the tile is empty
-			if (not isEmpty(rank, file)) {
-				// if the tile is occupied, return true iff the occupant is white
-				return tiles[rank][file]->isWhite();
-			}
-			// if tile is empty return false
-			return false;
-		}
-
-		bool blackOccupied(int rank, int file) {
-			// check if the tile is empty
-			if (not isEmpty(rank, file)) {
-				// if the tile is occupied, return true iff the occupant is not white
-				return tiles[rank][file]->isWhite();
-			}
-			// if tile is empty return false
-			return false;
-		}
-
 	}
+
+	bool isEmpty(int rank, int file) {
+		return tiles[rank][file] == NULL;
+	}
+
+	bool whiteOccupied(int rank, int file) {
+		// check if the tile is empty
+		if (not isEmpty(rank, file)) {
+			// if the tile is occupied, return true iff the occupant is white
+			return tiles[rank][file]->isWhite();
+		}
+		// if tile is empty return false
+		return false;
+	}
+
+	bool blackOccupied(int rank, int file) {
+		// check if the tile is empty
+		if (not isEmpty(rank, file)) {
+			// if the tile is occupied, return true iff the occupant is not white
+			return tiles[rank][file]->isWhite();
+		}
+		// if tile is empty return false
+		return false;
+	}
+
+
 };
 
 int main()
