@@ -8,6 +8,7 @@ using std::make_pair;
 class Piece {
 	bool white;
 public:
+	Piece() {} // look into why the code needs the default constructor
 	Piece(bool isWhite) {
 		this->white = isWhite;
 	}
@@ -52,41 +53,7 @@ public:
 	}
 };
 
-class Tile {
-	int rank;
-	int file;
-	Piece* currentOccupant;
-public:
-	Tile(int rank, int file, Piece* currentOccupant) {
-		this->rank = rank;
-		this->file = file;
-		this->currentOccupant = currentOccupant;
-	};
 
-	bool isEmpty() {
-		return currentOccupant == NULL;
-	}
-
-	bool whiteOccupied() {
-		// check if the tile is empty
-		if (not isEmpty()) {
-			// if the tile is occupied, return true iff the occupant is white
-			return (*currentOccupant).isWhite();
-		}
-		// if tile is empty return false
-		return false;
-	}
-
-	bool blackOccupied() {
-		// check if the tile is empty
-		if (not isEmpty()) {
-			// if the tile is occupied, return true iff the occupant is not white
-			return not (*currentOccupant).isWhite();
-		}
-		// if tile is empty return false
-		return false;
-	}
-};
 
 class Board {
 	Piece* tiles[8][8];
@@ -158,6 +125,32 @@ public:
 
 	void setNumBlackPieces(int numBlackPieces) {
 		this->numBlackPieces = numBlackPieces;
+
+
+		bool isEmpty(int rank, int file) {
+			return tiles[rank][file] == NULL;
+		}
+
+		bool whiteOccupied(int rank, int file) {
+			// check if the tile is empty
+			if (not isEmpty(rank, file)) {
+				// if the tile is occupied, return true iff the occupant is white
+				return tiles[rank][file]->isWhite();
+			}
+			// if tile is empty return false
+			return false;
+		}
+
+		bool blackOccupied(int rank, int file) {
+			// check if the tile is empty
+			if (not isEmpty(rank, file)) {
+				// if the tile is occupied, return true iff the occupant is not white
+				return tiles[rank][file]->isWhite();
+			}
+			// if tile is empty return false
+			return false;
+		}
+
 	}
 };
 
@@ -181,8 +174,8 @@ int main()
 		}
 		cout << "\n";
 	}
-	cout << 
+	cout <<
 
-	system("pause>0");
+		system("pause>0");
 }
 
