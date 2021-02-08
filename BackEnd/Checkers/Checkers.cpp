@@ -42,18 +42,6 @@ public:
 	}
 };
 
-class NullPiece : public Piece {
-public:
-	using Piece::Piece;
-	pair<int, int>* getAvailableMoves() {
-		return NULL;
-	}
-
-	pair<int, int>* getAvailableAttacks() {
-		return NULL;
-	}
-};
-
 class King : public Piece {
 public:
 	using Piece::Piece;
@@ -70,14 +58,13 @@ public:
 
 
 class Board {
-	//Piece* tiles[8][8]; -> this is what should be in the final version, remove the public copy when ready to uncomment
+	Piece** tiles;
 	bool whiteTurn;
 	int numWhitePieces;
 	int numBlackPieces;
 public:
-	Piece** tiles;
 
-	void setUp() {
+	Board() {
 		this->tiles = (Piece**)calloc(64, sizeof(Piece));
 		for (int rank = 0; rank < 8; rank++) {
 			for (int file = 0; file < 8; file++) {
@@ -101,7 +88,7 @@ public:
 		setNumBlackPieces(12);
 	}
 
-	void cleanUp() {
+	~Board() {
 		for (int rank = 0; rank < 8; rank++) {
 			for (int file = 0; file < 8; file++) {
 				delete(this->tiles[rank * 8 + file]);
@@ -111,7 +98,7 @@ public:
 	}
 
 	Piece** getTiles() {
-		return (Piece**)this->tiles;
+		return this->tiles;
 	}
 
 	bool checkmate() {
@@ -151,14 +138,14 @@ public:
 	}
 
 	bool isEmpty(int rank, int file) {
-		return typeid(tiles[rank * 8 + file]) == typeid(NullPiece);
+		return tiles[rank * 8 + file] == NULL;
 	}
 
 	bool whiteOccupied(int rank, int file) {
 		// check if the tile is empty
 		if (not isEmpty(rank, file)) {
 			// if the tile is occupied, return true iff the occupant is white
-			return tiles[rank][file].isWhite();
+			return tiles[rank * 8 + file]->isWhite();
 		}
 		// if tile is empty return false
 		return false;
@@ -168,7 +155,7 @@ public:
 		// check if the tile is empty
 		if (not isEmpty(rank, file)) {
 			// if the tile is occupied, return true iff the occupant is not white
-			return tiles[rank][file].isWhite();
+			return !(tiles[rank * 8 + file]->isWhite());
 		}
 		// if tile is empty return false
 		return false;
@@ -181,10 +168,12 @@ int main()
 	cout << "Creating Board\n";
 
 	Board* b = new Board();
-	b->setUp();
 
 	Piece** t = b->getTiles();
-	
+
+	//cout << b->isEmpty(0, 0) << "\n" << b->isEmpty(0, 1) << "\n";
+	//cout << b->blackOccupied(0, 0) << "\n" << b->whiteOccupied(0, 0) << "\n";
+
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 
@@ -192,7 +181,13 @@ int main()
 				cout << " ";
 			}
 			else if (typeid(*t[i * 8 + j]) == typeid(Men)) {
-				cout << "M";
+				//cout << "M";
+				if (t[i * 8 + j]->isWhite()) {
+					cout << "W";
+				}
+				else {
+					cout << "B";
+				}
 			}
 			else if (typeid(*t[i * 8 + j]) == typeid(King)) {
 				cout << "K";
@@ -203,7 +198,6 @@ int main()
 	}
 
 	// free and delete allocated memory
-	b->cleanUp();
 	delete(b);
 
 	cout << system("pause>0");
