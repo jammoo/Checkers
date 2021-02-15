@@ -88,8 +88,8 @@ public:
 		return this->whiteTurn;
 	}
 
-	void setWhiteTurn(bool whiteTurn) {
-		this->whiteTurn = whiteTurn;
+	void alternateWhiteTurn(bool whiteTurn) {
+		this->whiteTurn = !whiteTurn;
 	}
 
 	int getNumWhitePieces() {
