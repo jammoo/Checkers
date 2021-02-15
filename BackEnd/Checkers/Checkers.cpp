@@ -8,51 +8,24 @@ using std::make_pair;
 using std::endl;
 
 class Piece {
+protected:
 	bool white;
 public:
 	Piece() {} // look into why the code needs the default constructor
 	Piece(bool isWhite) {
 		this->white = isWhite;
 	}
-	virtual pair<int, int>* getAvailableMoves() = 0;
-	virtual pair<int, int>* getAvailableAttacks() = 0;
-	bool isWhite() {
+	virtual bool isWhite() {
 		return this->white == true;
-	}
+	};
 };
 
 class Men : public Piece {
-public:
 	using Piece::Piece;
-	pair<int, int>* getAvailableMoves() {
-		if (this->isWhite()) {
-			pair<int, int> am[2] = { make_pair(1, -1), make_pair(1, 1) };
-			return am;
-		}
-		pair<int, int> am[2] = { make_pair(-1, -1), make_pair(-1, 1) };
-		return am;
-	}
-	pair<int, int>* getAvailableAttacks() {
-		if (this->isWhite()) {
-			pair<int, int> aa[2] = { make_pair(2, -2), make_pair(2, 2) };
-			return aa;
-		}
-		pair<int, int> aa[2] = { make_pair(-2, -2), make_pair(-2, 2) };
-		return aa;
-	}
 };
 
 class King : public Piece {
-public:
 	using Piece::Piece;
-	pair<int, int>* getAvailableMoves() {
-		pair<int, int> am[4] = { make_pair(-1, -1), make_pair(-1, 1), make_pair(1, -1), make_pair(1, 1) };
-		return am;
-	}
-	pair<int, int>* getAvailableAttacks() {
-		pair<int, int> aa[4] = { make_pair(-2, -2), make_pair(-2, 2), make_pair(2, -2), make_pair(2, 2) };
-		return aa;
-	}
 };
 
 
@@ -161,7 +134,62 @@ public:
 		return false;
 	}
 
+	pair<int, int>* possibleMoves(int rank, int file) {
+		cout << typeid(*this->tiles[rank * 8 + file]).name() << "\n";
+		if (typeid(*this->tiles[rank * 8 + file]) == typeid(Men)) {
+			return possibleMovesMen(rank, file);
+		}
+		else if (typeid(*this->getTiles()[rank * 8 + file]) == typeid(King)) {
+			return possibleMovesKing(rank, file);
+		}
+		return NULL;
+	}
+
+	pair<int, int>* possibleAttacks(int rank, int file) {
+		if (typeid(*this->getTiles()[rank * 8 + file]) == typeid(Men)) {
+			return possibleAttacksMen(rank, file);
+		}
+		else if (typeid(*this->getTiles()[rank * 8 + file]) == typeid(King)) {
+			return possibleAttacksKing(rank, file);
+		}
+		return NULL;
+	}
+
+	pair<int, int>* possibleMovesKing(int rank, int file) {
+		pair<int, int> am[4] = { make_pair(-1, -1), make_pair(-1, 1), make_pair(1, -1), make_pair(1, 1) };
+		return am;
+	}
+	pair<int, int>* possibleAttacksKing(int rank, int file) {
+		pair<int, int> aa[4] = { make_pair(-2, -2), make_pair(-2, 2), make_pair(2, -2), make_pair(2, 2) };
+		return aa;
+	}
+
+	pair<int, int>* possibleMovesMen(int rank, int file) {
+		if (this->whiteOccupied(rank, file)) {
+			pair<int, int> pm[4] = { make_pair(1, -1), make_pair(1, 1), make_pair(0, 0), make_pair(0, 0) };
+			return pm;
+		}
+		else if (this->blackOccupied(rank, file)) {
+			pair<int, int> pm[4] = { make_pair(-1, -1), make_pair(-1, 1), make_pair(0, 0), make_pair(0, 0) };
+			return pm;
+		}
+		return NULL;
+	}
+
+	pair<int, int>* possibleAttacksMen(int rank, int file) {
+		if (this->whiteOccupied(rank, file)) {
+			pair<int, int> pa[4] = { make_pair(2, -2), make_pair(2, 2), make_pair(0, 0), make_pair(0, 0) };
+			return pa;
+		}
+		else if (this->blackOccupied(rank, file)) {
+			pair<int, int> pa[4] = { make_pair(-2, -2), make_pair(-2, 2), make_pair(0, 0), make_pair(0, 0) };
+			return pa;
+		}
+		return NULL;
+	}
+
 };
+
 
 int main()
 {
@@ -196,9 +224,6 @@ int main()
 		}
 		cout << "\n";
 	}
-
-	// free and delete allocated memory
-	delete(b);
 
 	cout << system("pause>0");
 }
