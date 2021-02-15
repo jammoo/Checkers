@@ -11,7 +11,6 @@ class Piece {
 protected:
 	bool white;
 public:
-	Piece() {} // look into why the code needs the default constructor
 	Piece(bool isWhite) {
 		this->white = isWhite;
 	}
@@ -27,7 +26,6 @@ class Men : public Piece {
 class King : public Piece {
 	using Piece::Piece;
 };
-
 
 
 class Board {
@@ -110,8 +108,16 @@ public:
 		this->numBlackPieces = numBlackPieces;
 	}
 
+	void decrementNumWhitePieces() {
+		this->setNumWhitePieces(this->getNumWhitePieces() - 1);
+	}
+
+	void decrementNumBlackPieces() {
+		this->setNumBlackPieces(this->getNumBlackPieces() - 1);
+	}
+
 	bool isEmpty(int rank, int file) {
-		return tiles[rank * 8 + file] == NULL;
+		return this->getTiles()[rank * 8 + file] == NULL;
 	}
 
 	bool whiteOccupied(int rank, int file) {
@@ -135,8 +141,7 @@ public:
 	}
 
 	pair<int, int>* possibleMoves(int rank, int file) {
-		cout << typeid(*this->tiles[rank * 8 + file]).name() << "\n";
-		if (typeid(*this->tiles[rank * 8 + file]) == typeid(Men)) {
+		if (typeid(*this->getTiles()[rank * 8 + file]) == typeid(Men)) {
 			return possibleMovesMen(rank, file);
 		}
 		else if (typeid(*this->getTiles()[rank * 8 + file]) == typeid(King)) {
@@ -159,6 +164,7 @@ public:
 		pair<int, int> am[4] = { make_pair(-1, -1), make_pair(-1, 1), make_pair(1, -1), make_pair(1, 1) };
 		return am;
 	}
+
 	pair<int, int>* possibleAttacksKing(int rank, int file) {
 		pair<int, int> aa[4] = { make_pair(-2, -2), make_pair(-2, 2), make_pair(2, -2), make_pair(2, 2) };
 		return aa;
@@ -166,7 +172,7 @@ public:
 
 	pair<int, int>* possibleMovesMen(int rank, int file) {
 		if (this->whiteOccupied(rank, file)) {
-			pair<int, int> pm[4] = { make_pair(1, -1), make_pair(1, 1), make_pair(0, 0), make_pair(0, 0) };
+			pair<int, int> pm[4] = { make_pair(0, 0), make_pair(0, 0), make_pair(1, -1), make_pair(1, 1) };
 			return pm;
 		}
 		else if (this->blackOccupied(rank, file)) {
@@ -178,7 +184,7 @@ public:
 
 	pair<int, int>* possibleAttacksMen(int rank, int file) {
 		if (this->whiteOccupied(rank, file)) {
-			pair<int, int> pa[4] = { make_pair(2, -2), make_pair(2, 2), make_pair(0, 0), make_pair(0, 0) };
+			pair<int, int> pa[4] = { make_pair(0, 0), make_pair(0, 0), make_pair(2, -2), make_pair(2, 2) };
 			return pa;
 		}
 		else if (this->blackOccupied(rank, file)) {
@@ -188,6 +194,69 @@ public:
 		return NULL;
 	}
 
+	pair<int, int>* actualMoves(int rank, int file) {
+		pair<int, int>* am;
+		am = this->possibleMoves(rank, file);
+		if (am == NULL) {
+			return NULL;
+		}
+		for (int i = 0; i < 4; i++) {
+			if (rank + am[i].first < 0 || rank + am[i].first > 7 || file + am[i].second < 0 || file + am[i].second  > 7) {
+				am[i] = make_pair(0, 0);
+			}
+			if (!this->isEmpty(rank + am[i].first, file + am[i].second)) {
+				am[i] = make_pair(0, 0);
+			}
+		}
+		return am;
+	}
+
+	pair<int, int>* actualAttacks(int rank, int file) {
+		pair<int, int>* aa;
+		aa = this->possibleAttacks(rank, file);
+		if (aa == NULL) {
+			return NULL;
+		}
+		for (int i = 0; i < 4; i++) {
+			if (rank + aa[i].first < 0 || rank + aa[i].first > 7 || file + aa[i].second < 0 || file + aa[i].second  > 7) {
+				aa[i] = make_pair(0, 0);
+			}
+			if (!this->isEmpty(rank + aa[i].first, file + aa[i].second)) {
+				aa[i] = make_pair(0, 0);
+			}
+			if (this->whiteOccupied(rank, file)) {
+				if (!this->blackOccupied(rank + aa[i].first / 2, file + aa[i].second / 2)) {
+					aa[i] = make_pair(0, 0);
+				}
+			}
+			if (this->blackOccupied(rank, file)) {
+				if (!this->whiteOccupied(rank + aa[i].first / 2, file + aa[i].second / 2)) {
+					aa[i] = make_pair(0, 0);
+				}
+			}
+		}
+		return aa;
+	}
+
+	// Assume valid move
+	void move(int rank, int file, pair<int, int> direction) {
+		this->getTiles()[(rank + direction.first) * 8 + (file + direction.second)] = this->getTiles()[rank * 8 + file];
+		this->getTiles()[rank * 8 + file] = NULL;
+	}
+
+	// Assume valid attack
+	void attack(int rank, int file, pair<int, int> direction) {
+		bool isWhite = this->getTiles()[rank * 8 + file]->isWhite();
+		this->getTiles()[(rank + direction.first) * 8 + (file + direction.second)] = this->getTiles()[rank * 8 + file];
+		this->getTiles()[rank * 8 + file] = NULL;
+		this->getTiles()[(rank + direction.first / 2) * 8 + (file + direction.second / 2)] = NULL;
+		if (isWhite) {
+			decrementNumBlackPieces();
+		}
+		else {
+			decrementNumWhitePieces();
+		}
+	}
 };
 
 
@@ -199,8 +268,40 @@ int main()
 
 	Piece** t = b->getTiles();
 
-	//cout << b->isEmpty(0, 0) << "\n" << b->isEmpty(0, 1) << "\n";
-	//cout << b->blackOccupied(0, 0) << "\n" << b->whiteOccupied(0, 0) << "\n";
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+
+			if (t[i * 8 + j] == NULL) {
+				cout << " ";
+			}
+			else if (typeid(*t[i * 8 + j]) == typeid(Men)) {
+				//cout << "M";
+				if (t[i * 8 + j]->isWhite()) {
+					cout << "W";
+				}
+				else {
+					cout << "B";
+				}
+			}
+			else if (typeid(*t[i * 8 + j]) == typeid(King)) {
+				cout << "K";
+			}
+			cout << " ";
+		}
+		cout << "\n";
+	}
+
+	pair<int, int>* am1 = b->actualMoves(2, 7);
+	b->move(2, 7, am1[2]);
+	pair<int, int>* am2 = b->actualMoves(3, 6);
+	b->move(3, 6, am2[2]);
+	pair<int, int>* aa1 = b->actualAttacks(5, 6);
+	b->attack(5, 6, aa1[0]);
+	pair<int, int>* aa2 = b->actualAttacks(2, 3);
+	b->attack(2, 3, aa2[3]);
+
+	cout << "\n";
+	cout << "\n";
 
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
@@ -227,4 +328,3 @@ int main()
 
 	cout << system("pause>0");
 }
-
