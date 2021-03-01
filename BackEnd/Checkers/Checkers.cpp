@@ -6,6 +6,7 @@ using std::cout;
 using std::pair;
 using std::make_pair;
 using std::endl;
+using std::abs;
 
 class Piece {
 protected:
@@ -88,8 +89,12 @@ public:
 		return this->whiteTurn;
 	}
 
-	void alternateWhiteTurn(bool whiteTurn) {
-		this->whiteTurn = !whiteTurn;
+	void setWhiteTurn(bool whiteTurn) {
+		this->whiteTurn = whiteTurn;
+	}
+
+	void alternateWhiteTurn() {
+		this->setWhiteTurn(!this->isWhiteTurn());
 	}
 
 	int getNumWhitePieces() {
@@ -140,66 +145,105 @@ public:
 		return false;
 	}
 
-	pair<int, int>* possibleMoves(int rank, int file) {
+	// Assume pm is memory allocated for four elements
+	void possibleMoves(pair<int, int>* pm, int rank, int file) {
 		if (typeid(*this->getTiles()[rank * 8 + file]) == typeid(Men)) {
-			return possibleMovesMen(rank, file);
+			possibleMovesMen(pm, rank, file);
 		}
 		else if (typeid(*this->getTiles()[rank * 8 + file]) == typeid(King)) {
-			return possibleMovesKing(rank, file);
+			possibleMovesKing(pm, rank, file);
 		}
-		return NULL;
 	}
 
-	pair<int, int>* possibleAttacks(int rank, int file) {
+	// Assume pa is memory allocated for four elements
+	void possibleAttacks(pair<int, int>* pa, int rank, int file) {
 		if (typeid(*this->getTiles()[rank * 8 + file]) == typeid(Men)) {
-			return possibleAttacksMen(rank, file);
+			possibleAttacksMen(pa, rank, file);
 		}
 		else if (typeid(*this->getTiles()[rank * 8 + file]) == typeid(King)) {
-			return possibleAttacksKing(rank, file);
+			possibleAttacksKing(pa, rank, file);
 		}
-		return NULL;
 	}
 
-	pair<int, int>* possibleMovesKing(int rank, int file) {
-		pair<int, int> am[4] = { make_pair(-1, -1), make_pair(-1, 1), make_pair(1, -1), make_pair(1, 1) };
-		return am;
+	// Assume pm is memory allocated for four elements
+	void possibleMovesKing(pair<int, int>* pm, int rank, int file) {
+		if (this->isEmpty(rank, file)) {
+			pm[0] = make_pair(0, 0);
+			pm[1] = make_pair(0, 0);
+			pm[2] = make_pair(0, 0);
+			pm[3] = make_pair(0, 0);
+		}
+		else {
+			pm[0] = make_pair(-1, -1);
+			pm[1] = make_pair(-1, 1);
+			pm[2] = make_pair(1, -1);
+			pm[3] = make_pair(1, 1);
+		}
 	}
 
-	pair<int, int>* possibleAttacksKing(int rank, int file) {
-		pair<int, int> aa[4] = { make_pair(-2, -2), make_pair(-2, 2), make_pair(2, -2), make_pair(2, 2) };
-		return aa;
+	// Assume pa is memory allocated for four elements
+	void possibleAttacksKing(pair<int, int>* pa, int rank, int file) {
+		if (this->isEmpty(rank, file)) {
+			pa[0] = make_pair(0, 0);
+			pa[1] = make_pair(0, 0);
+			pa[2] = make_pair(0, 0);
+			pa[3] = make_pair(0, 0);
+		}
+		else {
+			pa[0] = make_pair(-2, -2);
+			pa[1] = make_pair(-2, 2);
+			pa[2] = make_pair(2, -2);
+			pa[3] = make_pair(2, 2);
+		}
 	}
 
-	pair<int, int>* possibleMovesMen(int rank, int file) {
+	// Assume pm is memory allocated for four elements
+	void possibleMovesMen(pair<int, int>* pm, int rank, int file) {
 		if (this->whiteOccupied(rank, file)) {
-			pair<int, int> pm[4] = { make_pair(0, 0), make_pair(0, 0), make_pair(1, -1), make_pair(1, 1) };
-			return pm;
+			pm[0] = make_pair(0, 0);
+			pm[1] = make_pair(0, 0);
+			pm[2] = make_pair(1, -1);
+			pm[3] = make_pair(1, 1);
 		}
 		else if (this->blackOccupied(rank, file)) {
-			pair<int, int> pm[4] = { make_pair(-1, -1), make_pair(-1, 1), make_pair(0, 0), make_pair(0, 0) };
-			return pm;
+			pm[0] = make_pair(-1, -1);
+			pm[1] = make_pair(-1, 1);
+			pm[2] = make_pair(0, 0);
+			pm[3] = make_pair(0, 0);
 		}
-		return NULL;
+		else {
+			pm[0] = make_pair(0, 0);
+			pm[1] = make_pair(0, 0);
+			pm[2] = make_pair(0, 0);
+			pm[3] = make_pair(0, 0);
+		}
 	}
 
-	pair<int, int>* possibleAttacksMen(int rank, int file) {
+	// Assume pa is memory allocated for four elements
+	void possibleAttacksMen(pair<int, int>* pa, int rank, int file) {
 		if (this->whiteOccupied(rank, file)) {
-			pair<int, int> pa[4] = { make_pair(0, 0), make_pair(0, 0), make_pair(2, -2), make_pair(2, 2) };
-			return pa;
+			pa[0] = make_pair(0, 0);
+			pa[1] = make_pair(0, 0);
+			pa[2] = make_pair(2, -2);
+			pa[3] = make_pair(2, 2);
 		}
 		else if (this->blackOccupied(rank, file)) {
-			pair<int, int> pa[4] = { make_pair(-2, -2), make_pair(-2, 2), make_pair(0, 0), make_pair(0, 0) };
-			return pa;
+			pa[0] = make_pair(-2, -2);
+			pa[1] = make_pair(-2, 2);
+			pa[2] = make_pair(0, 0);
+			pa[3] = make_pair(0, 0);
 		}
-		return NULL;
+		else {
+			pa[0] = make_pair(0, 0);
+			pa[1] = make_pair(0, 0);
+			pa[2] = make_pair(0, 0);
+			pa[3] = make_pair(0, 0);
+		}
 	}
 
-	pair<int, int>* actualMoves(int rank, int file) {
-		pair<int, int>* am;
-		am = this->possibleMoves(rank, file);
-		if (am == NULL) {
-			return NULL;
-		}
+	// Assume am is memory allocated for four elements
+	void actualMoves(pair<int, int>* am, int rank, int file) {
+		this->possibleMoves(am, rank, file);
 		for (int i = 0; i < 4; i++) {
 			if (rank + am[i].first < 0 || rank + am[i].first > 7 || file + am[i].second < 0 || file + am[i].second  > 7) {
 				am[i] = make_pair(0, 0);
@@ -208,15 +252,11 @@ public:
 				am[i] = make_pair(0, 0);
 			}
 		}
-		return am;
 	}
 
-	pair<int, int>* actualAttacks(int rank, int file) {
-		pair<int, int>* aa;
-		aa = this->possibleAttacks(rank, file);
-		if (aa == NULL) {
-			return NULL;
-		}
+	// Assume aa is memory allocated for four elements
+	void actualAttacks(pair<int, int>* aa, int rank, int file) {
+		this->possibleAttacks(aa, rank, file);
 		for (int i = 0; i < 4; i++) {
 			if (rank + aa[i].first < 0 || rank + aa[i].first > 7 || file + aa[i].second < 0 || file + aa[i].second  > 7) {
 				aa[i] = make_pair(0, 0);
@@ -235,21 +275,62 @@ public:
 				}
 			}
 		}
-		return aa;
+	}
+
+	// Assume aa is memory allocated for four elements
+	void actualActions(pair<int, int>* aa, int rank, int file) {
+		bool availableAttack = false;
+		this->actualAttacks(aa, rank, file);
+		for (int i = 0; i < 4; i++) {
+			if (aa[i] != make_pair(0, 0)) {
+				availableAttack = true;
+			}
+		}
+		if (!availableAttack) {
+			this->actualMoves(aa, rank, file);
+		}
+	}
+
+	void turn(pair<int, int> vector, int rank, int file) {
+		if (abs(vector.first) == 1 && abs(vector.second) == 1) {
+			move(vector, rank, file);
+		}
+		else if (abs(vector.first) == 2 && abs(vector.second) == 2) {
+			pair<int, int> aa[4];
+			bool attackAvailable = false;
+			do {
+				attack(vector, rank, file);
+				rank = rank + vector.first;
+				file = file + vector.second;
+				this->actualAttacks(aa, rank, file);
+				for (int i = 0; i < 4; i++) {
+					if (aa[i] != make_pair(0, 0)) {
+						attackAvailable = true;
+					}
+				}
+				// Waits for user to select new attack if have possible attack------------------------------------------------------------------------------
+				if (attackAvailable = true) {
+
+
+
+				}
+			} while (attackAvailable);
+		}
+		this->alternateWhiteTurn();
 	}
 
 	// Assume valid move
-	void move(int rank, int file, pair<int, int> direction) {
-		this->getTiles()[(rank + direction.first) * 8 + (file + direction.second)] = this->getTiles()[rank * 8 + file];
+	void move(pair<int, int> vector, int rank, int file) {
+		this->getTiles()[(rank + vector.first) * 8 + (file + vector.second)] = this->getTiles()[rank * 8 + file];
 		this->getTiles()[rank * 8 + file] = NULL;
 	}
 
 	// Assume valid attack
-	void attack(int rank, int file, pair<int, int> direction) {
+	void attack(pair<int, int> vector, int rank, int file) {
 		bool isWhite = this->getTiles()[rank * 8 + file]->isWhite();
-		this->getTiles()[(rank + direction.first) * 8 + (file + direction.second)] = this->getTiles()[rank * 8 + file];
+		this->getTiles()[(rank + vector.first) * 8 + (file + vector.second)] = this->getTiles()[rank * 8 + file];
 		this->getTiles()[rank * 8 + file] = NULL;
-		this->getTiles()[(rank + direction.first / 2) * 8 + (file + direction.second / 2)] = NULL;
+		this->getTiles()[(rank + vector.first / 2) * 8 + (file + vector.second / 2)] = NULL;
 		if (isWhite) {
 			decrementNumBlackPieces();
 		}
@@ -291,6 +372,7 @@ int main()
 		cout << "\n";
 	}
 
+	/*
 	pair<int, int>* am1 = b->actualMoves(2, 7);
 	b->move(2, 7, am1[2]);
 	pair<int, int>* am2 = b->actualMoves(3, 6);
@@ -299,6 +381,7 @@ int main()
 	b->attack(5, 6, aa1[0]);
 	pair<int, int>* aa2 = b->actualAttacks(2, 3);
 	b->attack(2, 3, aa2[3]);
+	*/
 
 	cout << "\n";
 	cout << "\n";
