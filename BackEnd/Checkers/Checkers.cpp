@@ -330,8 +330,8 @@ public:
 		this->getTiles()[(rank + vector.first) * 8 + (file + vector.second)] = this->getTiles()[rank * 8 + file];
 		this->getTiles()[rank * 8 + file] = NULL;
 		this->getTiles()[(rank + vector.first / 2) * 8 + (file + vector.second / 2)] = NULL;
-		bool isWhite = this->getTiles()[rank * 8 + file]->isWhite();
-		if (isWhite) {
+		
+		if (this->getTiles()[rank * 8 + file]->isWhite()) {
 			decrementNumBlackPieces();
 		}
 		else {
