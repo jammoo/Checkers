@@ -73,7 +73,8 @@ public:
 		return this->tiles;
 	}
 
-	bool checkmate() {
+	// TODO: checkmate logic is incomplete, need to also check if there are no moves available for the current player
+        bool checkmate() {
 		return this->numWhitePieces == 0 || this->numBlackPieces == 0;
 	}
 
@@ -255,21 +256,22 @@ public:
 	}
 
 	// Assume aa is memory allocated for four elements
-	void actualAttacks(pair<int, int>* aa, int rank, int file) {
+// TODO: double check the logic here
+        void actualAttacks(pair<int, int>* aa, int rank, int file) {
 		this->possibleAttacks(aa, rank, file);
 		for (int i = 0; i < 4; i++) {
 			if (rank + aa[i].first < 0 || rank + aa[i].first > 7 || file + aa[i].second < 0 || file + aa[i].second  > 7) {
 				aa[i] = make_pair(0, 0);
 			}
-			if (!this->isEmpty(rank + aa[i].first, file + aa[i].second)) {
+			elseif (!this->isEmpty(rank + aa[i].first, file + aa[i].second)) {
 				aa[i] = make_pair(0, 0);
 			}
-			if (this->whiteOccupied(rank, file)) {
+			elseif (this->whiteOccupied(rank, file)) {
 				if (!this->blackOccupied(rank + aa[i].first / 2, file + aa[i].second / 2)) {
 					aa[i] = make_pair(0, 0);
 				}
 			}
-			if (this->blackOccupied(rank, file)) {
+			elseif (this->blackOccupied(rank, file)) {
 				if (!this->whiteOccupied(rank + aa[i].first / 2, file + aa[i].second / 2)) {
 					aa[i] = make_pair(0, 0);
 				}
@@ -278,6 +280,7 @@ public:
 	}
 
 	// Assume aa is memory allocated for four elements
+        // TODO: we need this function to be possibleActions and then make an actualActions function that checks all possible moves for the player
 	void actualActions(pair<int, int>* aa, int rank, int file) {
 		bool availableAttack = false;
 		this->actualAttacks(aa, rank, file);
@@ -308,7 +311,7 @@ public:
 						attackAvailable = true;
 					}
 				}
-				// Waits for user to select new attack if have possible attack------------------------------------------------------------------------------
+				// TODO: update implementation here, get rid of while loop check available attacks before changing turns, possible return if there are possible attacks
 				if (attackAvailable = true) {
 
 
