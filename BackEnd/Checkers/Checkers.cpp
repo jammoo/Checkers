@@ -327,10 +327,10 @@ public:
 
 	// Assume valid attack
 	void attack(pair<int, int> vector, int rank, int file) {
-		bool isWhite = this->getTiles()[rank * 8 + file]->isWhite();
 		this->getTiles()[(rank + vector.first) * 8 + (file + vector.second)] = this->getTiles()[rank * 8 + file];
 		this->getTiles()[rank * 8 + file] = NULL;
 		this->getTiles()[(rank + vector.first / 2) * 8 + (file + vector.second / 2)] = NULL;
+		bool isWhite = this->getTiles()[rank * 8 + file]->isWhite();
 		if (isWhite) {
 			decrementNumBlackPieces();
 		}
